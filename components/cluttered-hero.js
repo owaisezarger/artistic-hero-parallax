@@ -10,11 +10,14 @@ const ClutteredHero = () => {
   const containerRef = useRef(null);
   const isScrolling = useRef(false);
   const autoplayTimerRef = useRef(null);
-  const titleRefs = useRef([]);
-  const imageRefs = useRef([]);
-  const descRefs = useRef([]);
-  const bgRefs = useRef([]);
+  const titleRefsMobile = useRef([]);
+  const imageRefsMobile = useRef([]);
+  const descRefsMobile = useRef([]);
+  const titleRefsDesktop = useRef([]);
+  const imageRefsDesktop = useRef([]);
+  const descRefsDesktop = useRef([]);
   const overlayRefs = useRef([]);
+  const bgRefs = useRef([]);
 
   const sections = [
     {
@@ -71,41 +74,132 @@ const ClutteredHero = () => {
 
   // Create zoom animation for images
   const startZoomAnimation = (index) => {
-    if (!imageRefs.current[index].animationStarted) {
-      gsap.to(imageRefs.current[index], {
-        scale: 1.1, // Zoom to 110% of original size
+    // Handle mobile image
+    if (
+      imageRefsMobile.current[index] &&
+      !imageRefsMobile.current[index].animationStarted
+    ) {
+      gsap.to(imageRefsMobile.current[index], {
+        scale: 1.1,
         duration: 5,
         ease: "sine.inOut",
         repeat: -1,
         yoyo: true,
       });
-      imageRefs.current[index].animationStarted = true;
+      imageRefsMobile.current[index].animationStarted = true;
+    }
+
+    // Handle desktop image
+    if (
+      imageRefsDesktop.current[index] &&
+      !imageRefsDesktop.current[index].animationStarted
+    ) {
+      gsap.to(imageRefsDesktop.current[index], {
+        scale: 1.1,
+        duration: 5,
+        ease: "sine.inOut",
+        repeat: -1,
+        yoyo: true,
+      });
+      imageRefsDesktop.current[index].animationStarted = true;
     }
   };
 
   const handleImageHover = (index, isEnter) => {
     if (isEnter) {
-      gsap.to(imageRefs.current[index], {
+      gsap.to(imageRefsDesktop.current[index], {
         x: "2px",
         duration: 0.4,
         repeat: 3,
         yoyo: true,
         ease: "power1.inOut",
         onComplete: () => {
-          gsap.set(imageRefs.current[index], { x: 0 });
+          gsap.set(imageRefsDesktop.current[index], { x: 0 });
         },
       });
     }
   };
+
+  // const animateSection = (direction, nextIndex) => {
+  //   const currentSection = activeSection;
+  //   const duration = 0.8;
+  //   const ease = "power2.inOut";
+
+  //   // Current section animations
+  //   // When scrolling down: bg exits down, content exits down
+  //   // When scrolling up: bg exits up, content exits up
+  //   gsap.to(bgRefs.current[currentSection], {
+  //     y: direction > 0 ? "100%" : "-100%",
+  //     opacity: 0,
+  //     duration: duration,
+  //     ease: ease,
+  //   });
+
+  //   const contentElements = [
+  //     titleRefs.current[currentSection],
+  //     imageRefs.current[currentSection],
+  //     descRefs.current[currentSection],
+  //     ...(overlayRefs.current[currentSection] || []),
+  //   ];
+
+  //   gsap.to(contentElements, {
+  //     y: direction > 0 ? "100%" : "-100%",
+  //     opacity: 0,
+  //     duration: duration,
+  //     ease: ease,
+  //   });
+
+  //   // Next section animations
+  //   // When scrolling down: bg enters from top, content enters from bottom
+  //   // When scrolling up: bg enters from bottom, content enters from top
+  //   gsap.fromTo(
+  //     bgRefs.current[nextIndex],
+  //     {
+  //       y: direction > 0 ? "-100%" : "100%",
+  //       opacity: 0,
+  //     },
+  //     {
+  //       y: "0%",
+  //       opacity: 1,
+  //       duration: duration,
+  //       ease: ease,
+  //     }
+  //   );
+
+  //   const nextContentElements = [
+  //     titleRefs.current[nextIndex],
+  //     imageRefs.current[nextIndex],
+  //     descRefs.current[nextIndex],
+  //     ...(overlayRefs.current[nextIndex] || []),
+  //   ];
+
+  //   gsap.fromTo(
+  //     nextContentElements,
+  //     {
+  //       y: direction > 0 ? "100%" : "-100%",
+  //       opacity: 0,
+  //     },
+  //     {
+  //       y: "0%",
+  //       opacity: 1,
+  //       duration: duration,
+  //       ease: ease,
+  //       onComplete: () => {
+  //         startBackgroundAnimation(nextIndex);
+  //         startZoomAnimation(nextIndex);
+  //       },
+  //     }
+  //   );
+  // };
+
+  // Initial load animation
 
   const animateSection = (direction, nextIndex) => {
     const currentSection = activeSection;
     const duration = 0.8;
     const ease = "power2.inOut";
 
-    // Current section animations
-    // When scrolling down: bg exits down, content exits down
-    // When scrolling up: bg exits up, content exits up
+    // Background animation
     gsap.to(bgRefs.current[currentSection], {
       y: direction > 0 ? "100%" : "-100%",
       opacity: 0,
@@ -113,14 +207,24 @@ const ClutteredHero = () => {
       ease: ease,
     });
 
-    const contentElements = [
-      titleRefs.current[currentSection],
-      imageRefs.current[currentSection],
-      descRefs.current[currentSection],
-      ...(overlayRefs.current[currentSection] || []),
+    // Mobile content elements including overlays
+    const mobileContentElements = [
+      titleRefsMobile.current[currentSection],
+      imageRefsMobile.current[currentSection],
+      descRefsMobile.current[currentSection],
+      ...(overlayRefs.current[currentSection]?.mobile || []),
     ];
 
-    gsap.to(contentElements, {
+    // Desktop content elements including overlays
+    const desktopContentElements = [
+      titleRefsDesktop.current[currentSection],
+      imageRefsDesktop.current[currentSection],
+      descRefsDesktop.current[currentSection],
+      ...(overlayRefs.current[currentSection]?.desktop || []),
+    ];
+
+    // Animate current section out
+    gsap.to([...mobileContentElements, ...desktopContentElements], {
       y: direction > 0 ? "100%" : "-100%",
       opacity: 0,
       duration: duration,
@@ -128,31 +232,22 @@ const ClutteredHero = () => {
     });
 
     // Next section animations
-    // When scrolling down: bg enters from top, content enters from bottom
-    // When scrolling up: bg enters from bottom, content enters from top
-    gsap.fromTo(
-      bgRefs.current[nextIndex],
-      {
-        y: direction > 0 ? "-100%" : "100%",
-        opacity: 0,
-      },
-      {
-        y: "0%",
-        opacity: 1,
-        duration: duration,
-        ease: ease,
-      }
-    );
+    const nextMobileElements = [
+      titleRefsMobile.current[nextIndex],
+      imageRefsMobile.current[nextIndex],
+      descRefsMobile.current[nextIndex],
+      ...(overlayRefs.current[nextIndex]?.mobile || []),
+    ];
 
-    const nextContentElements = [
-      titleRefs.current[nextIndex],
-      imageRefs.current[nextIndex],
-      descRefs.current[nextIndex],
-      ...(overlayRefs.current[nextIndex] || []),
+    const nextDesktopElements = [
+      titleRefsDesktop.current[nextIndex],
+      imageRefsDesktop.current[nextIndex],
+      descRefsDesktop.current[nextIndex],
+      ...(overlayRefs.current[nextIndex]?.desktop || []),
     ];
 
     gsap.fromTo(
-      nextContentElements,
+      [...nextMobileElements, ...nextDesktopElements],
       {
         y: direction > 0 ? "100%" : "-100%",
         opacity: 0,
@@ -170,48 +265,65 @@ const ClutteredHero = () => {
     );
   };
 
-  // Initial load animation
   useLayoutEffect(() => {
     if (isInitialLoad) {
       const duration = 0.8;
       const ease = "power2.out";
 
-      // Hide all sections except the first one
       sections.forEach((_, index) => {
         if (index !== 0) {
           gsap.set(bgRefs.current[index], { opacity: 0, y: "100%" });
+
+          // Mobile elements
           gsap.set(
             [
-              titleRefs.current[index],
-              imageRefs.current[index],
-              descRefs.current[index],
-              ...(overlayRefs.current[index] || []),
+              titleRefsMobile.current[index],
+              imageRefsMobile.current[index],
+              descRefsMobile.current[index],
+              ...(overlayRefs.current[index]?.mobile || []),
+            ],
+            { opacity: 0, y: "100%" }
+          );
+
+          // Desktop elements
+          gsap.set(
+            [
+              titleRefsDesktop.current[index],
+              imageRefsDesktop.current[index],
+              descRefsDesktop.current[index],
+              ...(overlayRefs.current[index]?.desktop || []),
             ],
             { opacity: 0, y: "100%" }
           );
         }
       });
 
-      // Set initial positions for first section
-      gsap.set(bgRefs.current[0], {
-        y: "-100%",
-        opacity: 0,
-      });
+      // Initial positions for first section
+      gsap.set(bgRefs.current[0], { y: "-100%", opacity: 0 });
 
+      // Mobile first section
       gsap.set(
         [
-          titleRefs.current[0],
-          imageRefs.current[0],
-          descRefs.current[0],
-          ...(overlayRefs.current[0] || []),
+          titleRefsMobile.current[0],
+          imageRefsMobile.current[0],
+          descRefsMobile.current[0],
+          ...(overlayRefs.current[0]?.mobile || []),
         ],
-        {
-          y: "100%",
-          opacity: 0,
-        }
+        { y: "100%", opacity: 0 }
       );
 
-      // Animate background from top
+      // Desktop first section
+      gsap.set(
+        [
+          titleRefsDesktop.current[0],
+          imageRefsDesktop.current[0],
+          descRefsDesktop.current[0],
+          ...(overlayRefs.current[0]?.desktop || []),
+        ],
+        { y: "100%", opacity: 0 }
+      );
+
+      // Animate background
       gsap.to(bgRefs.current[0], {
         y: "0%",
         opacity: 1,
@@ -219,13 +331,29 @@ const ClutteredHero = () => {
         ease: ease,
       });
 
-      // Animate other elements from bottom
+      // Animate mobile elements
       gsap.to(
         [
-          titleRefs.current[0],
-          imageRefs.current[0],
-          descRefs.current[0],
-          ...(overlayRefs.current[0] || []),
+          titleRefsMobile.current[0],
+          imageRefsMobile.current[0],
+          descRefsMobile.current[0],
+          ...(overlayRefs.current[0]?.mobile || []),
+        ],
+        {
+          y: "0%",
+          opacity: 1,
+          duration: duration,
+          ease: ease,
+        }
+      );
+
+      // Animate desktop elements
+      gsap.to(
+        [
+          titleRefsDesktop.current[0],
+          imageRefsDesktop.current[0],
+          descRefsDesktop.current[0],
+          ...(overlayRefs.current[0]?.desktop || []),
         ],
         {
           y: "0%",
@@ -315,11 +443,10 @@ const ClutteredHero = () => {
         resetAutoplayTimer();
       } else {
         document.body.style.overflow = "auto";
-        if (window.innerHeight > 768){
-        setAutoplayEnabled(true);
-        }else{
-        setAutoplayEnabled(false);
-
+        if (window.innerHeight > 768) {
+          setAutoplayEnabled(true);
+        } else {
+          setAutoplayEnabled(false);
         }
       }
     };
@@ -445,7 +572,7 @@ const ClutteredHero = () => {
               <div className="flex flex-col h-full lg:hidden px-4 pt-16">
                 <div className="flex-none section-text z-20 mb-8">
                   <h2
-                     ref={(el) => (titleRefs.current[index] = el)}
+                    ref={(el) => (titleRefsMobile.current[index] = el)}
                     className="text-4xl text-left text-white whitespace-pre-line"
                   >
                     {section.content.title}
@@ -454,22 +581,27 @@ const ClutteredHero = () => {
 
                 <div className="flex-1 flex items-center justify-center relative">
                   <img
-                    ref={(el) => (imageRefs.current[index] = el)}
+                    ref={(el) => (imageRefsMobile.current[index] = el)}
                     src={section.content.mainImage}
                     alt="Section Visual"
                     className={`${
                       index === 0 ? "w-full sm:w-1/2" : "sm:w-[44%] w-2/3"
                     } h-auto relative z-10`}
                   />
+                  {/* Mobile overlay images */}
                   {index === 0 &&
                     section.content.overlayImages &&
                     section.content.overlayImages.map((img, i) => (
                       <img
                         key={i}
                         ref={(el) => {
-                          if (!overlayRefs.current[index])
-                            overlayRefs.current[index] = [];
-                          overlayRefs.current[index][i] = el;
+                          if (!overlayRefs.current[index]) {
+                            overlayRefs.current[index] = {
+                              mobile: [],
+                              desktop: [],
+                            };
+                          }
+                          overlayRefs.current[index].mobile[i] = el;
                         }}
                         src={img}
                         alt={`Overlay ${i + 1}`}
@@ -483,7 +615,7 @@ const ClutteredHero = () => {
                 </div>
 
                 <div
-                  ref={(el) => (descRefs.current[index] = el)}
+                  ref={(el) => (descRefsMobile.current[index] = el)}
                   className="flex-none section-text z-20 mt-6 mb-24"
                 >
                   <p className="text-white/80 text-sm text-right px-4">
@@ -503,9 +635,13 @@ const ClutteredHero = () => {
                   {index === 1 && (
                     <img
                       ref={(el) => {
-                        if (!overlayRefs.current[1])
-                          overlayRefs.current[1] = [];
-                        overlayRefs.current[1][0] = el;
+                        if (!overlayRefs.current[index]) {
+                          overlayRefs.current[index] = {
+                            mobile: [],
+                            desktop: [],
+                          };
+                        }
+                        overlayRefs.current[index].desktop[0] = el;
                       }}
                       src="/images/home/sec-2-rectangle.png"
                       alt="Decorative Rectangle"
@@ -513,7 +649,7 @@ const ClutteredHero = () => {
                     />
                   )}
                   <h2
-                    ref={(el) => (titleRefs.current[index] = el)}
+                    ref={(el) => (titleRefsDesktop.current[index] = el)}
                     className={`relative ${
                       index === 0 ? "top-0 left-0" : "-top-20 left-0"
                     } text-7xl text-white font-uni whitespace-pre-line`}
@@ -524,22 +660,27 @@ const ClutteredHero = () => {
 
                 <div className="relative">
                   <img
-                    ref={(el) => (imageRefs.current[index] = el)}
+                    ref={(el) => (imageRefsDesktop.current[index] = el)}
                     src={section.content.mainImage}
                     alt="Section Visual"
                     className="w-full h-auto relative z-10"
                     onMouseEnter={() => handleImageHover(index, true)}
                     onMouseLeave={() => handleImageHover(index, false)}
                   />
+                  {/* Desktop overlay images */}
                   {index === 0 &&
                     section.content.overlayImages &&
                     section.content.overlayImages.map((img, i) => (
                       <img
                         key={i}
                         ref={(el) => {
-                          if (!overlayRefs.current[index])
-                            overlayRefs.current[index] = [];
-                          overlayRefs.current[index][i] = el;
+                          if (!overlayRefs.current[index]) {
+                            overlayRefs.current[index] = {
+                              mobile: [],
+                              desktop: [],
+                            };
+                          }
+                          overlayRefs.current[index].desktop[i] = el;
                         }}
                         src={img}
                         alt={`Overlay ${i + 1}`}
@@ -551,7 +692,7 @@ const ClutteredHero = () => {
                 </div>
 
                 <div
-                  ref={(el) => (descRefs.current[index] = el)}
+                  ref={(el) => (descRefsDesktop.current[index] = el)}
                   className={`relative ${
                     index === 0 ? "top-40 right-0" : "top-40 right-0"
                   } section-text z-20`}
@@ -569,7 +710,7 @@ const ClutteredHero = () => {
         </div>
       ))}
       {/* Mobile Navigation Controls */}
-      <div className="lg:hidden absolute bottom-8 left-8 flex flex-col gap-2 z-50">
+      <div className="lg:hidden absolute bottom-16 left-8 flex flex-col gap-2 z-50">
         <button
           onClick={() => handleNavigation(-1)}
           disabled={activeSection === 0}
