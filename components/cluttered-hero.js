@@ -120,87 +120,10 @@ const ClutteredHero = () => {
     }
   };
 
-  // const animateSection = (direction, nextIndex) => {
-  //   const currentSection = activeSection;
-  //   const duration = 0.8;
-  //   const ease = "power2.inOut";
-
-  //   // Current section animations
-  //   // When scrolling down: bg exits down, content exits down
-  //   // When scrolling up: bg exits up, content exits up
-  //   gsap.to(bgRefs.current[currentSection], {
-  //     y: direction > 0 ? "100%" : "-100%",
-  //     opacity: 0,
-  //     duration: duration,
-  //     ease: ease,
-  //   });
-
-  //   const contentElements = [
-  //     titleRefs.current[currentSection],
-  //     imageRefs.current[currentSection],
-  //     descRefs.current[currentSection],
-  //     ...(overlayRefs.current[currentSection] || []),
-  //   ];
-
-  //   gsap.to(contentElements, {
-  //     y: direction > 0 ? "100%" : "-100%",
-  //     opacity: 0,
-  //     duration: duration,
-  //     ease: ease,
-  //   });
-
-  //   // Next section animations
-  //   // When scrolling down: bg enters from top, content enters from bottom
-  //   // When scrolling up: bg enters from bottom, content enters from top
-  //   gsap.fromTo(
-  //     bgRefs.current[nextIndex],
-  //     {
-  //       y: direction > 0 ? "-100%" : "100%",
-  //       opacity: 0,
-  //     },
-  //     {
-  //       y: "0%",
-  //       opacity: 1,
-  //       duration: duration,
-  //       ease: ease,
-  //     }
-  //   );
-
-  //   const nextContentElements = [
-  //     titleRefs.current[nextIndex],
-  //     imageRefs.current[nextIndex],
-  //     descRefs.current[nextIndex],
-  //     ...(overlayRefs.current[nextIndex] || []),
-  //   ];
-
-  //   gsap.fromTo(
-  //     nextContentElements,
-  //     {
-  //       y: direction > 0 ? "100%" : "-100%",
-  //       opacity: 0,
-  //     },
-  //     {
-  //       y: "0%",
-  //       opacity: 1,
-  //       duration: duration,
-  //       ease: ease,
-  //       onComplete: () => {
-  //         startBackgroundAnimation(nextIndex);
-  //         startZoomAnimation(nextIndex);
-  //       },
-  //     }
-  //   );
-  // };
-
-  // Initial load animation
-
   const animateSection = (direction, nextIndex) => {
     const currentSection = activeSection;
     const duration = 0.8;
     const ease = "power2.inOut";
-
-    // Stop current background animation
-    gsap.killTweensOf(bgRefs.current[currentSection]);
 
     // Hide current background
     gsap.to(bgRefs.current[currentSection], {
