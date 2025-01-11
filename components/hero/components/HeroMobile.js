@@ -1,5 +1,4 @@
 import React from 'react';
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const HeroMobile = ({ 
   section, 
