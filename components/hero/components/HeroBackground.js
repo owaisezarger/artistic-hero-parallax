@@ -1,5 +1,4 @@
-import React, { useRef, useEffect } from 'react';
-import { startBackgroundAnimation } from '../utils/animations';
+import React from 'react';
 
 const HeroBackground = ({ section, index, activeSection, bgRef }) => {
   return (

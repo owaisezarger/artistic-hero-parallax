@@ -3,8 +3,7 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const HeroMobile = ({ 
   section, 
-  index, 
-  activeSection,
+  index,
   titleRef,
   imageRef,
   descRef,

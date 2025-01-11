@@ -3,7 +3,6 @@ import React from 'react';
 const HeroDesktop = ({ 
   section, 
   index, 
-  activeSection,
   titleRef,
   imageRef,
   descRef,
