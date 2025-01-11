@@ -62,6 +62,8 @@ export const useHeroScroll = ({
     }, scrollCooldown);
   };
 
+  
+
   useLayoutEffect(() => {
     if (isMobileDevice()) {
       document.body.style.overflow = "auto";
@@ -70,6 +72,27 @@ export const useHeroScroll = ({
 
     const container = containerRef.current;
 
+    const handleScrollIntoView = () => {
+      // Disable scroll lock on mobile
+      if (isMobileDevice()) {
+        document.body.style.overflow = "auto";
+        setAutoplayEnabled(true);
+        return;
+      }
+  
+      const rect = container.getBoundingClientRect();
+      const isInView = rect.top <= 0 && rect.bottom + 1 >= window.innerHeight;
+  
+      if (isInView) {
+        document.body.style.overflow = "hidden";
+        setAutoplayEnabled(true);
+        resetAutoplayTimer();
+      } else {
+        document.body.style.overflow = "auto";
+        setAutoplayEnabled(false);
+      }
+    };
+    
     const handleWheel = (e) => {
       const rect = container.getBoundingClientRect();
       const isInView = rect.top <= 0 && rect.bottom + 1 >= window.innerHeight;
@@ -102,14 +125,31 @@ export const useHeroScroll = ({
       }
     };
 
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    container.addEventListener("touchstart", handleTouchStart);
-    container.addEventListener("touchmove", handleTouchMove);
+    // Add event listeners only if not on mobile
+    if (!isMobileDevice()) {
+      window.addEventListener("wheel", handleWheel, {
+        passive: false,
+        capture: true,
+      });
+      container.addEventListener("touchstart", handleTouchStart, {
+        passive: true,
+      });
+      container.addEventListener("touchmove", handleTouchMove, {
+        passive: false,
+      });
+    }
+    
+    window.addEventListener("scroll", handleScrollIntoView);
+
+    handleScrollIntoView();
 
     return () => {
-      window.removeEventListener("wheel", handleWheel);
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchmove", handleTouchMove);
+      if (!isMobileDevice()) {
+        window.removeEventListener("wheel", handleWheel, { capture: true });
+        container.removeEventListener("touchstart", handleTouchStart);
+        container.removeEventListener("touchmove", handleTouchMove);
+      }
+      window.removeEventListener("scroll", handleScrollIntoView);
       document.body.style.overflow = "auto";
     };
   }, [activeSection, sections.length]);
