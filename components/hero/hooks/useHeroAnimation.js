@@ -129,64 +129,49 @@ export const useHeroAnimation = ({
     if (isInitialLoad) {
       const duration = 0.8;
       const ease = "power2.out";
-
-      // Set initial positions for all sections
-      sections.forEach((_, index) => {
-        if (index !== 0) {
-          gsap.set(bgRefs.current[index], { opacity: 0, y: "-100%" });
-          
-          // Mobile elements
-          gsap.set(
-            [
-              titleRefsMobile.current[index],
-              imageRefsMobile.current[index],
-              descRefsMobile.current[index],
-              ...(overlayRefs.current[index]?.mobile || []),
-            ],
-            { opacity: 0, y: "100%" }
-          );
-
-          // Desktop elements
-          gsap.set(
-            [
-              titleRefsDesktop.current[index],
-              imageRefsDesktop.current[index],
-              descRefsDesktop.current[index],
-              ...(overlayRefs.current[index]?.desktop || []),
-            ],
-            { opacity: 0, y: "100%" }
-          );
-        }
-      });
-
-      // Animate first section
-      const animateFirstSection = () => {
+  
+      // Set initial positions for only the first section
+      gsap.set(bgRefs.current[0], { opacity: 0, y: "-100%" });
+      
+      // Set initial positions for first section mobile elements
+      gsap.set(
+        [
+          titleRefsMobile.current[0],
+          imageRefsMobile.current[0],
+          descRefsMobile.current[0],
+          ...(overlayRefs.current[0]?.mobile || []),
+        ],
+        { opacity: 0, y: "100%" }
+      );
+  
+      // Set initial positions for first section desktop elements
+      gsap.set(
+        [
+          titleRefsDesktop.current[0],
+          imageRefsDesktop.current[0],
+          descRefsDesktop.current[0],
+          ...(overlayRefs.current[0]?.desktop || []),
+        ],
+        { opacity: 0, y: "100%" }
+      );
+  
+      // Add a small delay to ensure refs are ready
+      setTimeout(() => {
+        // Animate background first
         gsap.to(bgRefs.current[0], {
           y: "0%",
           opacity: 1,
           duration: 0.6,
           ease: ease,
         });
-
-        // Animate mobile elements
+  
+        // Then animate content with a slight delay
         gsap.to(
           [
             titleRefsMobile.current[0],
             imageRefsMobile.current[0],
             descRefsMobile.current[0],
             ...(overlayRefs.current[0]?.mobile || []),
-          ],
-          {
-            y: "0%",
-            opacity: 1,
-            duration: duration,
-            ease: ease,
-          }
-        );
-
-        // Animate desktop elements
-        gsap.to(
-          [
             titleRefsDesktop.current[0],
             imageRefsDesktop.current[0],
             descRefsDesktop.current[0],
@@ -207,11 +192,9 @@ export const useHeroAnimation = ({
             },
           }
         );
-      };
-
-      animateFirstSection();
+      }, 100);
     }
-  }, [isInitialLoad]);
+  }, [isInitialLoad]); // Only depend on isInitialLoad since we only care about the first section
 
   // Cleanup on unmount
   useEffect(() => {
