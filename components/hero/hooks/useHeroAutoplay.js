@@ -1,13 +1,12 @@
-"use client";
 import { useLayoutEffect, useRef } from 'react';
-import { AUTOPLAY_INTERVAL } from '@/config/section-data';
 
-export const useAutoplay = (
+export const useHeroAutoplay = ({
   autoplayEnabled,
+  activeSection,
   setActiveSection,
   sections,
   animateSection
-) => {
+}) => {
   const autoplayTimerRef = useRef(null);
 
   const resetAutoplayTimer = () => {
@@ -22,7 +21,7 @@ export const useAutoplay = (
           animateSection(1, next);
           return next;
         });
-      }, AUTOPLAY_INTERVAL);
+      }, 5000);
     }
   };
 
@@ -35,5 +34,7 @@ export const useAutoplay = (
     };
   }, [autoplayEnabled]);
 
-  return { resetAutoplayTimer };
+  return {
+    resetAutoplayTimer
+  };
 };
