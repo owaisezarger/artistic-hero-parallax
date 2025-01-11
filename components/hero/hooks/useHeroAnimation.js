@@ -101,7 +101,10 @@ export const useHeroAnimation = ({
         duration: duration,
         ease: ease,
         onComplete: () => {
-          startZoomAnimation(nextIndex);
+          startZoomAnimation(
+            imageRefsMobile.current[nextIndex],
+            imageRefsDesktop.current[nextIndex]
+          );
         },
       }
     );
@@ -183,7 +186,10 @@ export const useHeroAnimation = ({
             onComplete: () => {
               setIsInitialLoad(false);
               startBackgroundAnimation(bgRefs.current[0]);
-              startZoomAnimation(0);
+              startZoomAnimation(
+                imageRefsMobile.current[0],
+                imageRefsDesktop.current[0]
+              );
             },
           }
         );
