@@ -17,8 +17,6 @@ export const useHeroAnimation = ({
   const overlayRefs = useRef([]);
   const bgRefs = useRef([]);
 
-  const activeAnimations = useRef([]);
-
   const animateSection = (direction, nextIndex) => {
     const currentSection = activeSection;
     const duration = 0.8;

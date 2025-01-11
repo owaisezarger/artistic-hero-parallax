@@ -19,10 +19,9 @@ export const useHeroScroll = ({
     const nextIndex = activeSection + direction;
     if (nextIndex >= 0 && nextIndex < sections.length) {
       animateSection(direction, nextIndex);
+      setActiveSection(nextIndex);
       resetAutoplayTimer();
-      return nextIndex;
     }
-    return activeSection;
   };
 
   const handleScroll = (direction) => {
