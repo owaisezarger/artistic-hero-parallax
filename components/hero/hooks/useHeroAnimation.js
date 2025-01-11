@@ -1,6 +1,6 @@
-import { useLayoutEffect, useRef } from 'react';
+import {useEffect, useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { startBackgroundAnimation, startZoomAnimation } from '../utils/animations';
+import { cleanupAnimations, startBackgroundAnimation, startZoomAnimation } from '../utils/animations';
 import { sections } from '../constants/heroData';
 
 export const useHeroAnimation = ({ 
@@ -17,10 +17,26 @@ export const useHeroAnimation = ({
   const overlayRefs = useRef([]);
   const bgRefs = useRef([]);
 
+  const activeAnimations = useRef([]);
+
   const animateSection = (direction, nextIndex) => {
     const currentSection = activeSection;
     const duration = 0.8;
     const ease = "power2.inOut";
+
+    // Cleanup any existing animations for the current sections
+    const currentElements = [
+      bgRefs.current[currentSection],
+      titleRefsMobile.current[currentSection],
+      imageRefsMobile.current[currentSection],
+      descRefsMobile.current[currentSection],
+      titleRefsDesktop.current[currentSection],
+      imageRefsDesktop.current[currentSection],
+      descRefsDesktop.current[currentSection],
+      ...(overlayRefs.current[currentSection]?.mobile || []),
+      ...(overlayRefs.current[currentSection]?.desktop || [])
+    ];
+    cleanupAnimations(currentElements);
 
     // Hide current background
     gsap.to(bgRefs.current[currentSection], {
@@ -119,7 +135,7 @@ export const useHeroAnimation = ({
       // Set initial positions for all sections
       sections.forEach((_, index) => {
         if (index !== 0) {
-          gsap.set(bgRefs.current[index], { opacity: 0, y: "100%" });
+          gsap.set(bgRefs.current[index], { opacity: 0, y: "-100%" });
           
           // Mobile elements
           gsap.set(
@@ -198,6 +214,38 @@ export const useHeroAnimation = ({
       animateFirstSection();
     }
   }, [isInitialLoad]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Cleanup all animations
+      sections.forEach((_, index) => {
+        const elements = [
+          bgRefs.current[index],
+          titleRefsMobile.current[index],
+          imageRefsMobile.current[index],
+          descRefsMobile.current[index],
+          titleRefsDesktop.current[index],
+          imageRefsDesktop.current[index],
+          descRefsDesktop.current[index],
+          ...(overlayRefs.current[index]?.mobile || []),
+          ...(overlayRefs.current[index]?.desktop || [])
+        ];
+        cleanupAnimations(elements);
+      });
+
+      // Kill any remaining GSAP animations
+      gsap.killTweensOf([
+        ...bgRefs.current,
+        ...titleRefsMobile.current,
+        ...imageRefsMobile.current,
+        ...descRefsMobile.current,
+        ...titleRefsDesktop.current,
+        ...imageRefsDesktop.current,
+        ...descRefsDesktop.current
+      ]);
+    };
+  }, []);
 
   return {
     animateSection,
