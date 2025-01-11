@@ -19,6 +19,22 @@ const ClutteredHero = () => {
   const overlayRefs = useRef([]);
   const bgRefs = useRef([]);
 
+  const isMobileDevice = () => {
+    return (
+      typeof window !== "undefined" &&
+      (navigator.userAgent.match(/Android/i) ||
+        navigator.userAgent.match(/webOS/i) ||
+        navigator.userAgent.match(/iPhone/i) ||
+        navigator.userAgent.match(/iPad/i) ||
+        navigator.userAgent.match(/iPod/i) ||
+        navigator.userAgent.match(/BlackBerry/i) ||
+        navigator.userAgent.match(/Windows Phone/i) ||
+        window.matchMedia("(max-width: 768px)").matches)
+    );
+  };
+
+
+
   const sections = [
     {
       bgImage: "/images/home/home-hero-bg-1.png",
@@ -331,20 +347,21 @@ const ClutteredHero = () => {
     }
   };
 
-  useLayoutEffect(() => {
+ useLayoutEffect(() => {
     const container = containerRef.current;
     let touchStartY = 0;
     let lastScrollTime = Date.now();
     const scrollCooldown = 1000;
 
     const handleScroll = (direction) => {
+      // Disable scroll handling on mobile
+      if (isMobileDevice()) return;
+
       const now = Date.now();
       if (isScrolling.current || now - lastScrollTime < scrollCooldown) return;
 
       const rect = container.getBoundingClientRect();
-      let isInView = rect.top <= 0 && rect.bottom + 1 >= window.innerHeight;
-
-      if (window.innerHeight > 768) isInView = false;
+      const isInView = rect.top <= 0 && rect.bottom + 1 >= window.innerHeight;
 
       if (!isInView) return;
 
@@ -355,12 +372,12 @@ const ClutteredHero = () => {
         const next = prev + direction;
         if (next >= 0 && next < sections.length) {
           animateSection(direction, next);
-          resetAutoplayTimer(); // Reset timer on manual scroll
+          resetAutoplayTimer();
           return next;
         }
         if (prev === sections.length - 1 && direction > 0) {
           document.body.style.overflow = "auto";
-          setAutoplayEnabled(false); // Disable autoplay when scrolling past last section
+          setAutoplayEnabled(false);
           return prev;
         }
         if (prev === 0 && direction < 0) {
@@ -376,31 +393,33 @@ const ClutteredHero = () => {
     };
 
     const handleScrollIntoView = () => {
-      const rect = container.getBoundingClientRect();
-      let isInView = rect.top <= 0 && rect.bottom + 1 >= window.innerHeight;
+      // Disable scroll lock on mobile
+      if (isMobileDevice()) {
+        document.body.style.overflow = "auto";
+        setAutoplayEnabled(true);
+        return;
+      }
 
-      // Make isInView false for small screens
-      if (window.innerHeight > 768) isInView = false;
+      const rect = container.getBoundingClientRect();
+      const isInView = rect.top <= 0 && rect.bottom + 1 >= window.innerHeight;
 
       if (isInView) {
         document.body.style.overflow = "hidden";
-        setAutoplayEnabled(true); // Re-enable autoplay when hero section is in view
+        setAutoplayEnabled(true);
         resetAutoplayTimer();
       } else {
         document.body.style.overflow = "auto";
-        if (window.innerHeight > 768) {
-          setAutoplayEnabled(true);
-        } else {
-          setAutoplayEnabled(false);
-        }
+        setAutoplayEnabled(false);
       }
     };
 
-    // Rest of the event handlers remain the same
     const handleWheel = (e) => {
+      // Disable wheel handling on mobile
+      if (isMobileDevice()) return;
+
       const rect = container.getBoundingClientRect();
-      let isInView = rect.top <= 0 && rect.bottom + 1 >= window.innerHeight;
-      if (window.innerHeight > 768) isInView = false;
+      const isInView = rect.top <= 0 && rect.bottom + 1 >= window.innerHeight;
+      
       if (isInView) {
         const direction = e.deltaY > 0 ? 1 : -1;
 
@@ -418,13 +437,18 @@ const ClutteredHero = () => {
     };
 
     const handleTouchStart = (e) => {
-      touchStartY = e.touches[0].clientY;
+      // Only track touch start on mobile for navigation buttons
+      if (!isMobileDevice()) {
+        touchStartY = e.touches[0].clientY;
+      }
     };
 
     const handleTouchMove = (e) => {
+      // Disable touch move handling on mobile
+      if (isMobileDevice()) return;
+
       const rect = container.getBoundingClientRect();
-      let isInView = rect.top <= 0 && rect.bottom + 1 >= window.innerHeight;
-      if (window.innerHeight > 768) isInView = false;
+      const isInView = rect.top <= 0 && rect.bottom + 1 >= window.innerHeight;
 
       if (isInView) {
         const touchEndY = e.touches[0].clientY;
@@ -446,24 +470,30 @@ const ClutteredHero = () => {
       }
     };
 
-    window.addEventListener("wheel", handleWheel, {
-      passive: false,
-      capture: true,
-    });
-    container.addEventListener("touchstart", handleTouchStart, {
-      passive: true,
-    });
-    container.addEventListener("touchmove", handleTouchMove, {
-      passive: false,
-    });
+    // Add event listeners only if not on mobile
+    if (!isMobileDevice()) {
+      window.addEventListener("wheel", handleWheel, {
+        passive: false,
+        capture: true,
+      });
+      container.addEventListener("touchstart", handleTouchStart, {
+        passive: true,
+      });
+      container.addEventListener("touchmove", handleTouchMove, {
+        passive: false,
+      });
+    }
+    
     window.addEventListener("scroll", handleScrollIntoView);
 
     handleScrollIntoView();
 
     return () => {
-      window.removeEventListener("wheel", handleWheel, { capture: true });
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchmove", handleTouchMove);
+      if (!isMobileDevice()) {
+        window.removeEventListener("wheel", handleWheel, { capture: true });
+        container.removeEventListener("touchstart", handleTouchStart);
+        container.removeEventListener("touchmove", handleTouchMove);
+      }
       window.removeEventListener("scroll", handleScrollIntoView);
       document.body.style.overflow = "auto";
     };
