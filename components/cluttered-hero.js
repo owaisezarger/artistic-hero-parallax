@@ -199,13 +199,36 @@ const ClutteredHero = () => {
     const duration = 0.8;
     const ease = "power2.inOut";
 
-    // Background animation
+    // Stop current background animation
+    gsap.killTweensOf(bgRefs.current[currentSection]);
+
+    // Hide current background
     gsap.to(bgRefs.current[currentSection], {
       y: direction > 0 ? "100%" : "-100%",
       opacity: 0,
+      scale: 1, // Reset scale
       duration: duration,
       ease: ease,
     });
+
+    // Show and animate next background
+    gsap.fromTo(
+      bgRefs.current[nextIndex],
+      {
+        y: direction > 0 ? "-100%" : "100%",
+        opacity: 0,
+        scale: 1,
+      },
+      {
+        y: "0%",
+        opacity: 1,
+        duration: duration,
+        ease: ease,
+        onComplete: () => {
+          startBackgroundAnimation(nextIndex);
+        },
+      }
+    );
 
     // Mobile content elements including overlays
     const mobileContentElements = [
@@ -258,7 +281,6 @@ const ClutteredHero = () => {
         duration: duration,
         ease: ease,
         onComplete: () => {
-          startBackgroundAnimation(nextIndex);
           startZoomAnimation(nextIndex);
         },
       }
@@ -557,7 +579,8 @@ const ClutteredHero = () => {
             style={{
               backgroundImage: `url(${section.bgImage})`,
               willChange: "transform",
-              opacity: index === 0 ? 1 : 0, // Initially hide all backgrounds except first
+              opacity: index === activeSection ? 1 : 0,
+              visibility: index === activeSection ? "visible" : "hidden",
             }}
           />
 
@@ -607,7 +630,7 @@ const ClutteredHero = () => {
                         alt={`Overlay ${i + 1}`}
                         className={`absolute ${
                           i === 0
-                            ? "top-2/3 w-3/4 sm:w-1/2 sm:left-32 left-4 -translate-y-1/4 scale-[1.6]"
+                            ? "top-2/3 w-3/4 sm:w-1/2 sm:left-32 left-4 -translate-y-1/4 scale-[1.5]"
                             : "top-20 w-3/4 sm:w-1/3"
                         } w-1/2 h-auto z-${9 - i}`}
                       />
@@ -616,7 +639,7 @@ const ClutteredHero = () => {
 
                 <div
                   ref={(el) => (descRefsMobile.current[index] = el)}
-                  className="flex-none section-text z-20 mt-6 mb-24"
+                  className="flex-none section-text z-20 mt-20 mb-24"
                 >
                   <p className="text-white/80 text-sm text-right px-4">
                     {section.content.description}
