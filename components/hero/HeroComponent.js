@@ -64,7 +64,7 @@ const HeroComponent = () => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-screen overflow-hidden bg-black isolate"
+      className="relative w-full h-screen overflow-hidden bg-[url('/images/home/home-hero-bg-1.png')] isolate"
     >
       {sections.map((section, index) => (
         <div
