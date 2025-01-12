@@ -46,9 +46,9 @@ const HeroMobile = ({
               alt={`Overlay ${i + 1}`}
               className={`absolute ${
                 i === 0
-                  ? "top-2/3 w-3/4 sm:w-1/2 sm:left-32 left-4 -translate-y-1/4 scale-[1.5]"
-                  : "top-20 w-3/4 sm:w-1/3"
-              } w-1/2 h-auto z-${9 - i}`}
+                  ? "top-1/2 w-3/4 sm:w-1/2 sm:left-32 left-4 -translate-y-1/4 scale-[1.5]"
+                  : "top-1/4 w-3/4 sm:w-1/3"
+              } w-1/2 h-auto z-${9 - i} max-h-[30vh] object-contain`}
             />
           ))}
       </div>

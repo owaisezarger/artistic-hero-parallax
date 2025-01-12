@@ -64,8 +64,8 @@ const HeroDesktop = ({
               src={img}
               alt={`Overlay ${i + 1}`}
               className={`absolute ${
-                i === 0 ? "top-60 scale-[2]" : "top-6"
-              } w-full h-auto z-${9 - i}`}
+                i === 0 ? "top-1/2 scale-[2]" : "top-1/4"
+              } w-full h-auto z-${9 - i} max-h-[40vh] object-contain`}
             />
           ))}
       </div>

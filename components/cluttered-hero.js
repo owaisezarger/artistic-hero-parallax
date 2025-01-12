@@ -555,40 +555,41 @@ const ClutteredHero = () => {
                   </h2>
                 </div>
 
-                <div className="flex-1 flex items-center justify-center relative">
-                  <img
-                    ref={(el) => (imageRefsMobile.current[index] = el)}
-                    src={section.content.mainImage}
-                    alt="Section Visual"
-                    className={`${
-                      index === 0 ? "w-full sm:w-1/2" : "sm:w-[44%] w-2/3"
-                    } h-auto relative z-10`}
-                  />
-                  {/* Mobile overlay images */}
-                  {index === 0 &&
-                    section.content.overlayImages &&
-                    section.content.overlayImages.map((img, i) => (
-                      <img
-                        key={i}
-                        ref={(el) => {
-                          if (!overlayRefs.current[index]) {
-                            overlayRefs.current[index] = {
-                              mobile: [],
-                              desktop: [],
-                            };
-                          }
-                          overlayRefs.current[index].mobile[i] = el;
-                        }}
-                        src={img}
-                        alt={`Overlay ${i + 1}`}
-                        className={`absolute ${
-                          i === 0
-                            ? "top-2/3 w-3/4 sm:w-1/2 sm:left-32 left-4 -translate-y-1/4 scale-[1.5]"
-                            : "top-20 w-3/4 sm:w-1/3"
-                        } w-1/2 h-auto z-${9 - i}`}
-                      />
-                    ))}
-                </div>
+                <div className="flex-1 flex items-center justify-center relative py-8">
+                <img
+                  ref={(el) => (imageRefsMobile.current[index] = el)}
+                  src={section.content.mainImage}
+                  alt="Section Visual"
+                  className={`${
+                    index === 0 ? "w-full sm:w-1/2" : "sm:w-[44%] w-2/3"
+                  } h-auto relative z-10 max-h-[50vh] object-contain`}
+                />
+                {/* Mobile overlay images */}
+                {index === 0 &&
+                  section.content.overlayImages &&
+                  section.content.overlayImages.map((img, i) => (
+                    <img
+                      key={i}
+                      ref={(el) => {
+                        if (!overlayRefs.current[index]) {
+                          overlayRefs.current[index] = {
+                            mobile: [],
+                            desktop: [],
+                          };
+                        }
+                        overlayRefs.current[index].mobile[i] = el;
+                      }}
+                      src={img}
+                      alt={`Overlay ${i + 1}`}
+                      className={`absolute ${
+                        i === 0
+                          ? "top-1/2 w-3/4 sm:w-1/2 sm:left-32 left-4 -translate-y-1/4 scale-[1.5]"
+                          : "top-1/4 w-3/4 sm:w-1/3"
+                      } w-1/2 h-auto z-${9 - i} max-h-[30vh] object-contain`}
+                    />
+                  ))}
+              </div>
+
 
                 <div
                   ref={(el) => (descRefsMobile.current[index] = el)}
@@ -634,38 +635,38 @@ const ClutteredHero = () => {
                   </h2>
                 </div>
 
-                <div className="relative">
-                  <img
-                    ref={(el) => (imageRefsDesktop.current[index] = el)}
-                    src={section.content.mainImage}
-                    alt="Section Visual"
-                    className="w-full h-auto relative z-10"
-                    onMouseEnter={() => handleImageHover(index, true)}
-                    onMouseLeave={() => handleImageHover(index, false)}
-                  />
-                  {/* Desktop overlay images */}
-                  {index === 0 &&
-                    section.content.overlayImages &&
-                    section.content.overlayImages.map((img, i) => (
-                      <img
-                        key={i}
-                        ref={(el) => {
-                          if (!overlayRefs.current[index]) {
-                            overlayRefs.current[index] = {
-                              mobile: [],
-                              desktop: [],
-                            };
-                          }
-                          overlayRefs.current[index].desktop[i] = el;
-                        }}
-                        src={img}
-                        alt={`Overlay ${i + 1}`}
-                        className={`absolute ${
-                          i === 0 ? "top-60 scale-[2]" : "top-6"
-                        } w-full h-auto z-${9 - i}`}
-                      />
-                    ))}
-                </div>
+                <div className="relative flex items-center justify-center">
+                <img
+                  ref={(el) => (imageRefsDesktop.current[index] = el)}
+                  src={section.content.mainImage}
+                  alt="Section Visual"
+                  className="w-full h-auto relative z-10 max-h-[60vh] object-contain"
+                  onMouseEnter={() => handleImageHover(index, true)}
+                  onMouseLeave={() => handleImageHover(index, false)}
+                />
+                {/* Desktop overlay images */}
+                {index === 0 &&
+                  section.content.overlayImages &&
+                  section.content.overlayImages.map((img, i) => (
+                    <img
+                      key={i}
+                      ref={(el) => {
+                        if (!overlayRefs.current[index]) {
+                          overlayRefs.current[index] = {
+                            mobile: [],
+                            desktop: [],
+                          };
+                        }
+                        overlayRefs.current[index].desktop[i] = el;
+                      }}
+                      src={img}
+                      alt={`Overlay ${i + 1}`}
+                      className={`absolute ${
+                        i === 0 ? "top-1/2 scale-[2]" : "top-1/4"
+                      } w-full h-auto z-${9 - i} max-h-[40vh] object-contain`}
+                    />
+                  ))}
+              </div>
 
                 <div
                   ref={(el) => (descRefsDesktop.current[index] = el)}
